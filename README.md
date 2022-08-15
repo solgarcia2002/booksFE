@@ -1,5 +1,8 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Development
+This project implements NextJS application, and [BooksBE](https://github.com/solgarcia2002/booksBE) as a service. Also uses Material UI in order to render icons and forms.
+
 ## Getting Started
 
 First, run the development server:
