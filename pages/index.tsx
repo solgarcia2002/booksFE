@@ -33,10 +33,10 @@ const Home: NextPage = () => {
         <h1>
           Welcome to <a href="https://github.com/solgarcia2002/books">BOOK me</a>
         </h1>
-        <Link href={'/bookForm'}><a>+ Add Book</a></Link>
+        <Link href={'/bookForm'}><a className={'addBook'}>+ Add Book</a></Link>
         <div className={'bookContainer'}>
           {books.length && books.map((book) => (
-            <BookCard bookData={book}/>
+            <BookCard bookData={book} key={book.id}/>
           ))
           }
         </div>
@@ -56,7 +56,7 @@ const Home: NextPage = () => {
           align-items: center;
         }
 
-        h1 a {
+        a {
           color: #0070f3;
           text-decoration: none;
         }
@@ -78,8 +78,14 @@ const Home: NextPage = () => {
           display: flex;
           flex-direction: row;
           gap: 2rem;
-          flex-wrap:wrap;
+          flex-wrap: wrap;
           max-width: 100%;
+          justify-content: center;
+        }
+
+        .addBook {
+          align-self: flex-end;
+          margin: 2rem 20%;
         }
       `}</style>
       <style jsx global>{`

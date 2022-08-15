@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Head from "next/head";
 import React, {useEffect, useState} from "react";
-import {Button, TextField, Box,Alert, Stack} from "@mui/material";
+import {Button, TextField, Box, Alert, Stack} from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 
 interface AuthorType {
@@ -15,6 +15,7 @@ const BookForm = () => {
   const [currentBookName, setCurrentBookName] = useState<string>('')
   const [currentBookDescription, setCurrentBookDescription] = useState<string>('')
   const [submitMessage, setSubmitMessage] = useState<string>('')
+  const [validationError, setValidationError] = useState<string[]>([])
   useEffect(() => {
     const getBooks = async () => {
       const res = await fetch('http://localhost:3010/authors')
@@ -31,14 +32,35 @@ const BookForm = () => {
     const selectedAuthor = event.target.value ?? 0;
     setCurrentAuthor(Number.parseInt(selectedAuthor))
   }
+  const validateForm = () => {
+    if (currentBookName.length > 2) {
+      setValidationError(validationError.filter((val) => val !== 'bookName'))
+    }
+    else {
+      const newValidationList = validationError
+      newValidationList.push('bookName')
+      setValidationError(newValidationList)
+    }
+    if (currentBookDescription.length > 2) {
+      setValidationError(validationError.filter((val) => val !== 'bookDescription'))
+    }
+    else {
+      const newValidationList = validationError
+      newValidationList.push('bookDescription')
+      setValidationError(newValidationList)
+    }
+    return (currentBookName && currentBookDescription)
+  }
   const handleAddBook = () => {
+    if (!validateForm()) return
     const requestOptions = {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         name: currentBookName,
         description: currentBookDescription,
-        authorId: currentAuthor})
+        authorId: currentAuthor
+      })
     };
     setCurrentBookDescription('')
     setCurrentAuthor(authors[0].id)
@@ -46,7 +68,9 @@ const BookForm = () => {
     fetch('http://localhost:3010/books', requestOptions)
       .then(response => {
         setSubmitMessage('Your book has been added')
-        setTimeout(()=>{setSubmitMessage('')},3000)
+        setTimeout(() => {
+          setSubmitMessage('')
+        }, 3000)
       })
   }
   return <>
@@ -75,6 +99,7 @@ const BookForm = () => {
               defaultValue={currentBookName}
               variant="standard"
               value={currentBookName}
+              error={validationError.includes('bookName')}
               helperText="Please select the book's name"
               onChange={(e) => {
                 setCurrentBookName(e.target.value)
@@ -88,6 +113,7 @@ const BookForm = () => {
               label="Book Description"
               defaultValue={currentBookDescription}
               value={currentBookDescription}
+              error={validationError.includes('bookDescription')}
               variant="standard"
               helperText="Please select the book's description"
               onChange={(e) => {
@@ -113,8 +139,8 @@ const BookForm = () => {
                 </option>
               ))}
             </TextField>
-            <Stack sx={{ width: '100%' }} spacing={2}>
-              {submitMessage && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+            <Stack sx={{width: '100%'}} spacing={2}>
+              {submitMessage && <Alert icon={<CheckIcon fontSize="inherit"/>} severity="success">
                 {submitMessage}
               </Alert>}
             </Stack>
