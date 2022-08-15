@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Head from "next/head";
-import React, {useEffect, useState} from "react";
+import Router from "next/router"
+import React, {useEffect, useState , useRef} from "react";
 import {Button, TextField, Box, Alert, Stack} from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 
@@ -12,10 +13,10 @@ interface AuthorType {
 const BookForm = () => {
   const [authors, setAuthors] = useState<AuthorType[]>([])
   const [currentAuthor, setCurrentAuthor] = useState<number>(0)
-  const [currentBookName, setCurrentBookName] = useState<string>('')
-  const [currentBookDescription, setCurrentBookDescription] = useState<string>('')
   const [submitMessage, setSubmitMessage] = useState<string>('')
   const [validationError, setValidationError] = useState<string[]>([])
+  let bookNameRef = useRef<HTMLInputElement | null>(null)
+  let bookDescriptionRef = useRef<HTMLInputElement | null>(null)
   useEffect(() => {
     const getBooks = async () => {
       const res = await fetch('http://localhost:3010/authors')
@@ -33,7 +34,7 @@ const BookForm = () => {
     setCurrentAuthor(Number.parseInt(selectedAuthor))
   }
   const validateForm = () => {
-    if (currentBookName.length > 2) {
+    if (bookNameRef?.current?.value?.length > 2) {
       setValidationError(validationError.filter((val) => val !== 'bookName'))
     }
     else {
@@ -41,7 +42,7 @@ const BookForm = () => {
       newValidationList.push('bookName')
       setValidationError(newValidationList)
     }
-    if (currentBookDescription.length > 2) {
+    if (bookDescriptionRef?.current?.value?.length > 2) {
       setValidationError(validationError.filter((val) => val !== 'bookDescription'))
     }
     else {
@@ -49,7 +50,7 @@ const BookForm = () => {
       newValidationList.push('bookDescription')
       setValidationError(newValidationList)
     }
-    return (currentBookName && currentBookDescription)
+    return (bookNameRef && bookDescriptionRef)
   }
   const handleAddBook = () => {
     if (!validateForm()) return
@@ -57,19 +58,18 @@ const BookForm = () => {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        name: currentBookName,
-        description: currentBookDescription,
+        name: bookNameRef.current?.value,
+        description: bookDescriptionRef.current?.value,
         authorId: currentAuthor
       })
     };
-    setCurrentBookDescription('')
     setCurrentAuthor(authors[0].id)
-    setCurrentBookName('')
     fetch('http://localhost:3010/books', requestOptions)
       .then(response => {
-        setSubmitMessage('Your book has been added')
+        setSubmitMessage('Your book has been added. You will be redirected to the list.')
         setTimeout(() => {
           setSubmitMessage('')
+          Router.push('/')
         }, 3000)
       })
   }
@@ -96,14 +96,11 @@ const BookForm = () => {
               className={'formItem'}
               id="bookName"
               label="Book Name"
-              defaultValue={currentBookName}
+              defaultValue={bookNameRef.current?.value}
               variant="standard"
-              value={currentBookName}
               error={validationError.includes('bookName')}
               helperText="Please select the book's name"
-              onChange={(e) => {
-                setCurrentBookName(e.target.value)
-              }}
+              inputRef={bookNameRef}
             />
             <TextField
               className={'formItem'}
@@ -111,14 +108,11 @@ const BookForm = () => {
               rows={4}
               id="bookDescription"
               label="Book Description"
-              defaultValue={currentBookDescription}
-              value={currentBookDescription}
+              defaultValue={bookDescriptionRef.current?.value}
               error={validationError.includes('bookDescription')}
               variant="standard"
               helperText="Please select the book's description"
-              onChange={(e) => {
-                setCurrentBookDescription(e.target.value)
-              }}
+              inputRef={bookDescriptionRef}
             />
             <TextField
               className={'formItem'}
