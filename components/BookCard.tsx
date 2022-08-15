@@ -29,16 +29,20 @@ const BookCard = ({bookData}: BookCardType) => (
         font-size: 3rem;
         margin-bottom: 0;
       }
-      h4{
+
+      h4 {
         color: #0070F3;
         font-size: 1.2rem;
         margin-top: 0;
       }
-      p{
-        color:#444;
+
+      p {
+        color: #444;
       }
+
       .cardContainer {
         min-width: 30rem;
+        width: 30%;
         min-height: 20rem;
         display: block;
         position: relative;
@@ -46,9 +50,7 @@ const BookCard = ({bookData}: BookCardType) => (
 
       .bookIconContainer, .bookInfo {
         width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
+        position: relative;
       }
 
       .bookIconContainer {
@@ -56,10 +58,17 @@ const BookCard = ({bookData}: BookCardType) => (
         display: flex;
         align-items: center;
         justify-content: center;
+        position: absolute;
+        z-index: -10;
       }
 
       .bookInfo {
-        z-index: 10;
+      }
+
+      @media (max-width: 600px) {
+        .cardContainer {
+          min-width: 15rem;
+        }
       }
     `}</style>
   </>
